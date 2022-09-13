@@ -60,7 +60,7 @@ const Home = () => {
   };
 
   const handleRoomIdSubmit = (e) => {
-    if (!input) {
+    if (!roomInput) {
       return;
     }
     socket.emit("join-room", roomInput);

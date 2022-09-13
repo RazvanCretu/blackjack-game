@@ -25,7 +25,7 @@ export default (io, socket) => {
 
   const joinRoom = (roomId) => {
     socket.join(roomId);
-    console.log(io.of("/").adapter.rooms);
+    console.log(socket.rooms, io.of("/").adapter.rooms);
     socket.emit("changed-room", roomId);
   };
 

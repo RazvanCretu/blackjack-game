@@ -23,7 +23,7 @@ export default (io, socket) => {
     // socket.leave();
     const playersInRoom = getPlayersInRoom(roomId);
     if (playersInRoom.length === 2) {
-      return callback({ message: "Room Full" });
+      return callback("Room Full");
     }
     socket.join(roomId);
     // console.log(socket.rooms);

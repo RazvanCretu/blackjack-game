@@ -70,7 +70,7 @@ const Home = () => {
     }
     socket.emit(
       "join-room",
-      { username: player.username, roomInput },
+      { username: player.username, roomId: roomInput },
       (error) => {
         if (error) {
           alert(error);

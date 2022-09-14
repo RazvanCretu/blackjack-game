@@ -16,11 +16,11 @@ const Home = () => {
   const socketInitializer = async () => {
     // Just call it because we don't need anything else out of it
     await fetch("/api/socket");
-
-    let player = JSON.parse(localStorage.getItem("player"));
-    if (player) {
-      console.log(player.username);
-      setPlayer(player);
+    let player_local = localStorage.getItem("player");
+    if (player_local) {
+      player_local = JSON.parse(player_local);
+      console.log(player_local.username);
+      setPlayer(player_local);
     }
 
     // Check if there is already a nickname
@@ -28,7 +28,6 @@ const Home = () => {
 
     socket.on("created-player", (player) => {
       setPlayer(player);
-      // setNickname(player.username);
       localStorage.setItem("player", JSON.stringify(player));
     });
 
@@ -47,11 +46,17 @@ const Home = () => {
     if (!input) {
       return;
     }
-    socket.emit("create-player", {
-      username: input,
-      socketId: socket.id,
-      roomId: socket.id,
-    });
+    socket.emit(
+      "create-player",
+      {
+        username: input,
+      },
+      (error) => {
+        if (error) {
+          alert(error);
+        }
+      }
+    );
     setInput("");
   };
 
@@ -63,7 +68,15 @@ const Home = () => {
     if (!roomInput) {
       return;
     }
-    socket.emit("join-room", roomInput);
+    socket.emit(
+      "join-room",
+      { username: player.username, roomInput },
+      (error) => {
+        if (error) {
+          alert(error);
+        }
+      }
+    );
     setRoomInput("");
     // setRoomInput(e.target.value.trim());
   };

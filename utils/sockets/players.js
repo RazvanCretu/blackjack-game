@@ -7,7 +7,7 @@ export const addPlayer = ({ playerId, username, roomId }) => {
   roomId = roomId.trim().toLowerCase();
 
   const existingPlayer = players.find((player) => {
-    return player.roomId === roomId && player.username === username;
+    return player.username === username;
   });
 
   //   console.log(existingPlayer);

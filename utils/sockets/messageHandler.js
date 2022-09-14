@@ -22,6 +22,7 @@ export default (io, socket) => {
   socket.on("join-room", ({ username, roomId }, callback) => {
     // socket.leave();
     const playersInRoom = getPlayersInRoom(roomId);
+    console.log(playersInRoom);
     if (playersInRoom.length >= 2) {
       return callback("Room Full");
     }

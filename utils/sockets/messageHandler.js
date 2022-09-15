@@ -6,45 +6,33 @@ import {
   removePlayer,
 } from "./players.js";
 
-// let players = [];
-// let rooms = [];
-// let players = {};
-
-// const addPlayer = (player) => {
-//   players.push(player);
-// };
-
-// const removePlayer = (playerId) => {
-//   players = players.filter((player) => player.playerId !== playerId);
-// };
-
 export default (io, socket) => {
-  socket.on("join-room", ({ username, roomId }, callback) => {
-    // socket.leave();
+  socket.on("join-room", ({ player, roomId }, callback) => {
     const playersInRoom = getPlayersInRoom(roomId);
-    console.log(playersInRoom);
     if (playersInRoom.length >= 2) {
-      return callback("Room Full");
+      return callback("Room Full, try another one.");
     }
+
     socket.join(roomId);
-    // console.log(socket.rooms);
-    socket.emit("changed-room", roomId);
+    removePlayer(player.playerId);
+    player.roomId = roomId;
+    const { playerCreated, err } = addPlayer(player);
+
+    if (err) {
+      return callback(err);
+    }
+
+    socket.in(player.roomId).emit("other-join", playerCreated);
+    socket.emit("changed-room", playerCreated);
   });
 
   socket.on("create-player", (player, callback) => {
-    // socket.join(player.roomId);
-    // console.log(io.of("/").adapter.rooms[player.roomId]);
     player.playerId = socket.id;
     player.roomId = socket.id;
     const { playerCreated, err } = addPlayer(player);
-    // console.log(player, playerCreated, err);
+
     if (err) return callback(err);
 
     socket.emit("created-player", playerCreated);
-    // rooms.push({
-    //     roomId: player.roomId,
-    //     playersInRoom: []
-    // })
-    // socket.join(player.roomId);
   });
 };

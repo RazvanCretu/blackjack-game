@@ -31,10 +31,13 @@ const Home = () => {
       localStorage.setItem("player", JSON.stringify(player));
     });
 
-    socket.on("changed-room", (roomId) => {
-      setPlayer((currPlayer) => {
-        return { ...currPlayer, roomId: roomId };
-      });
+    socket.on("changed-room", (player) => {
+      setPlayer(player);
+      localStorage.setItem("player", JSON.stringify(player));
+    });
+
+    socket.on("other-join", (player) => {
+      alert(player.username);
     });
   };
 
@@ -68,17 +71,12 @@ const Home = () => {
     if (!roomInput) {
       return;
     }
-    socket.emit(
-      "join-room",
-      { username: player.username, roomId: roomInput },
-      (error) => {
-        if (error) {
-          alert(error);
-        }
+    socket.emit("join-room", { player, roomId: roomInput }, (error) => {
+      if (error) {
+        alert(error);
       }
-    );
+    });
     setRoomInput("");
-    // setRoomInput(e.target.value.trim());
   };
 
   return (

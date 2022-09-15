@@ -23,8 +23,10 @@ export const addPlayer = ({ playerId, username, roomId }) => {
 
 export const removePlayer = (id) => {
   const index = players.findIndex((player) => {
-    player.playerId === id;
+    return player.playerId === id;
   });
+
+  console.log(index);
 
   if (index !== -1) {
     return players.splice(index, 1)[0];

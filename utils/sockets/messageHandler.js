@@ -4,6 +4,7 @@ import {
   getPlayersInRoom,
   getPlayer,
   removePlayer,
+  updatePlayer,
 } from "./players.js";
 
 export default (io, socket) => {
@@ -14,16 +15,17 @@ export default (io, socket) => {
     }
 
     socket.join(roomId);
-    removePlayer(player.playerId);
-    player.roomId = roomId;
-    const { playerCreated, err } = addPlayer(player);
+
+    const { updatedPlayer, err } = updatePlayer(player.playerId, {
+      roomId: roomId,
+    });
 
     if (err) {
       return callback(err);
     }
 
-    socket.in(player.roomId).emit("other-join", playerCreated);
-    socket.emit("changed-room", playerCreated);
+    io.in(updatedPlayer.roomId).emit("other-join", getPlayersInRoom(roomId));
+    socket.emit("changed-room", updatedPlayer);
   });
 
   socket.on("create-player", (player, callback) => {

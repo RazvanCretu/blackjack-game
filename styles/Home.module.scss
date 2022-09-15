@@ -12,6 +12,15 @@
   align-items: center;
 }
 
+.error {
+  position: absolute;
+  top: 100px;
+  height: 10vh;
+  width: 70vw;
+  background-color: gray;
+  color: #111;
+}
+
 .footer {
   display: flex;
   flex: 1;

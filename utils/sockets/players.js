@@ -1,16 +1,14 @@
+import { execOnce } from "next/dist/shared/lib/utils";
+
 export let players = [];
 
 export const addPlayer = ({ playerId, username, roomId }) => {
-  console.log(playerId, username, roomId);
-
   username = username.trim().toLowerCase();
   roomId = roomId.trim().toLowerCase();
 
   const existingPlayer = players.find((player) => {
     return player.username === username;
   });
-
-  //   console.log(existingPlayer);
   if (existingPlayer) {
     return { err: "Playername is taken" };
   }
@@ -21,12 +19,31 @@ export const addPlayer = ({ playerId, username, roomId }) => {
   return { playerCreated };
 };
 
-export const removePlayer = (id) => {
+export const updatePlayer = (id, props) => {
   const index = players.findIndex((player) => {
     return player.playerId === id;
   });
 
-  console.log(index);
+  if (index === -1) {
+    return { err: `The server couldn't find the player with ID: ${id}` };
+  }
+
+  const existingPlayer = players.splice(index, 1)[0];
+
+  const updatedPlayer = {
+    ...existingPlayer,
+    ...props,
+  };
+
+  players.push(updatedPlayer);
+
+  return { updatedPlayer };
+};
+
+export const removePlayer = (id) => {
+  const index = players.findIndex((player) => {
+    return player.playerId === id;
+  });
 
   if (index !== -1) {
     return players.splice(index, 1)[0];

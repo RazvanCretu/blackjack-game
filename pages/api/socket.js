@@ -14,7 +14,6 @@ export default function SocketHandler(req, res) {
 
   const onConnection = (socket) => {
     messageHandler(io, socket);
-    // io.sockets.
   };
 
   // Define actions inside

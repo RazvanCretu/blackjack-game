@@ -8,10 +8,25 @@ const Home = () => {
   const [roomInput, setRoomInput] = useState("");
   const [input, setInput] = useState("");
   const [player, setPlayer] = useState();
+  const [playersInRoom, setPlayersInRoom] = useState([]);
+  const [error, setError] = useState();
 
   useEffect(() => {
     socketInitializer();
   }, []);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+    const intervalId = setInterval(() => {
+      setError();
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [error]);
 
   const socketInitializer = async () => {
     // Just call it because we don't need anything else out of it
@@ -23,7 +38,6 @@ const Home = () => {
       setPlayer(player_local);
     }
 
-    // Check if there is already a nickname
     socket = io();
 
     socket.on("created-player", (player) => {
@@ -36,8 +50,8 @@ const Home = () => {
       localStorage.setItem("player", JSON.stringify(player));
     });
 
-    socket.on("other-join", (player) => {
-      alert(player.username);
+    socket.on("other-join", (playersInRoom) => {
+      setPlayersInRoom(playersInRoom);
     });
   };
 
@@ -74,6 +88,7 @@ const Home = () => {
     socket.emit("join-room", { player, roomId: roomInput }, (error) => {
       if (error) {
         alert(error);
+        setError(error);
       }
     });
     setRoomInput("");
@@ -81,8 +96,9 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
+      {error && <div className={styles.error}>{error}</div>}
       {player ? (
-        <div>
+        <div className={[styles.main].join(" ")}>
           <h1>Socket.io</h1>
           <h2>Connected as: {player.username}</h2>
           <button
@@ -94,7 +110,7 @@ const Home = () => {
             Exit
           </button>
           <div>
-            {<h3>Connected to room: {player.roomId}</h3>}
+            <h3>Connected to room: {player.roomId}</h3>
             <p>Join another room:</p>
             <input
               value={roomInput}
@@ -103,6 +119,12 @@ const Home = () => {
               onChange={handleRoomIdChange}
             />
             <button onClick={handleRoomIdSubmit}>Join</button>
+          </div>
+          <div>
+            {playersInRoom &&
+              playersInRoom.map((player, i) => {
+                return <h2 key={i}>{player.username}</h2>;
+              })}
           </div>
         </div>
       ) : (
